@@ -17,6 +17,7 @@
   </head>
   <body>
     <div class="container">
+    <? include 'menu.php'; ?>
     <h1>Lista soggetti corrispondenti</h1>
     <table class="table">
     <tr><td>Nome</td><td>Indirizzo</td><td>Telefono</td></tr>

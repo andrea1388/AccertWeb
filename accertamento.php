@@ -14,8 +14,9 @@
         	die("id non trovato");
         };
         $row = $result->fetch_assoc();
+        $nuovo=false;
 
-    }
+    } else $nuovo=true;
 
 ?>
 <!DOCTYPE html>
@@ -33,6 +34,7 @@
   </head>
   <body>
     <div class="container">
+    <? include 'menu.php'; ?>
     <h1>Accertamento</h1>
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaAccertamento.php">
@@ -87,6 +89,7 @@
 	  <!--
 		  Lista attività 
 	  -->
+    <? if(!$nuovo) :?>
       <div class="form-group">
           <label class="col-sm-2 control-label">Lista Attivit&agrave;</label>
           <div class="col-sm-10">
@@ -122,10 +125,12 @@
                     echo "<td><a href='scaricafile.php?idDocumento=".$row['idDocumento']."'>Apri</a></td>";
                     echo "<td><a href='rimuovifile.php?idDocumento=".$row['idDocumento']."'>Elimina</a></td></tr>";
                   }
+                  $conn->close();
               ?>
             </table>          
           </div>
       </div>
+      <?php endif; ?> 
       
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
@@ -143,6 +148,3 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>
-<?
-  $conn->close();
-?>

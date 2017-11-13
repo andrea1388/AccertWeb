@@ -33,6 +33,7 @@
   </head>
   <body>
     <div class="container">
+    <? include 'menu.php'; ?>
     <h1>Accertamento</h1>
 	<? if($ok) echo "Accertamento salvato"; else echo "Errore: Accertamento non salvato";?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    

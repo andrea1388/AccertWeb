@@ -17,7 +17,8 @@
   </head>
   <body>
     <div class="container">
-    <h1>Cerca Soggetto</h1>
+    <? include 'menu.php'; ?>
+    <h1>Cerca accertamento</h1>
       <form action='listaAccertamenti.php'>
         <div class="form-group">
           <label for="exampleInputEmail1">Dati</label>

@@ -17,6 +17,7 @@
   </head>
   <body>
     <div class="container">
+    <? include 'menu.php'; ?>
     <h1>Lista accertamenti corrispondenti</h1>
     <table class="table table-bordered table-hover">
     <tr><td>Numero</td><td>Anno</td><td>Luogo</td><td>Descrizione</td></tr>

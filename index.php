@@ -17,6 +17,7 @@
   </head>
   <body>
     <div class="container">
+    <? include 'menu.php'; ?>
     <h1>Accert - versione web</h1>
 		<button type="button" class="btn btn-default" onclick="window.location='cercaSoggetto.php'">Soggetti</button>    
 		<button type="button" class="btn btn-default" onclick="window.location='logout.php'">Esci</button>    
