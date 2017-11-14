@@ -19,15 +19,13 @@
     <div class="container">
     <? include 'menu.php'; ?>
     <h1>Lista soggetti corrispondenti</h1>
+    
     <table class="table table-bordered table-hover">
     <tr><td>Nome</td><td>Indirizzo</td><td>Telefono</td></tr>
 	 <?
-  		$conn = new mysqli($host, $username, $password, $database);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } 
+        $conn = ConnettiAlDB();        
         $c="%" . $_REQUEST['dati'] . "%";
-        $sql = "SELECT * FROM Persona WHERE (nome like ? or indirizzo like ? or residenza like ?)";
+        $sql = "SELECT * FROM Soggetto WHERE (nome like ? or societa like ? or residenza like ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sss", $c,$c,$c);
 		$stmt->execute();
@@ -35,7 +33,7 @@
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
-                echo "<tr onclick=\"window.document.location='soggetto.php?idSoggetto=".$row["idPersona"]."'\";><td>" . $row["nome"]. "</td><td>" . $row["residenza"]. " - " . $row["indirizzo"]. "</td><td>" . $row["telefono"] . "</td></tr>";
+                echo "<tr onclick=\"window.document.location='soggetto.php?idSoggetto=".$row["idSoggetto"]."'\";><td>" . $row["nome"]. "</td><td>" . $row["residenza"]. " - " . $row["indirizzo"]. "</td><td>" . $row["telefono"] . "</td></tr>";
             }
         } else {
             echo "0 results";

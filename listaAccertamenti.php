@@ -22,10 +22,7 @@
     <table class="table table-bordered table-hover">
     <tr><td>Numero</td><td>Anno</td><td>Luogo</td><td>Descrizione</td></tr>
 	 <?
-  		$conn = new mysqli($host, $username, $password, $database);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } 
+        $conn = ConnettiAlDB();
         $c="%" . $_REQUEST['dati'] . "%";
         $sql = "SELECT * FROM Accertamento WHERE (numero = ? or luogo like ? or descrizione like ? or descrizione_estesa like ?)";
         $stmt = $conn->prepare($sql);
@@ -35,7 +32,7 @@
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
-                echo "<tr onclick=\"window.document.location='accertamento.php?idAccertamento=".$row["idAccertamento"]."'\";><td>" . $row["numero"]. "</td><td>" . $row["anno"]. "</td><td>" . $row["luogo"]. "</td><td>" . $row["descrizione"] . "</td></tr>";
+                echo "<tr onclick=\"window.document.location='accertamento.php?idAccertamento=".$row["idAccertamento"]."'\";><td>" . $row["numero"]. "</td><td>" . $row["anno"]. "</td><td>" . $row["luogo"]. "</td><td>" . $row["descrizione"] . "</td></tr>\n";
             }
         } else {
             echo "0 results";

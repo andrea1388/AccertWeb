@@ -2,19 +2,16 @@
 	include 'base.php';
   RedirectSeMancaCookie();
 	if(isset($_REQUEST["idAccertamento"])) {
-  		$conn = new mysqli($host, $username, $password, $database);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } 
-        $stmt = $conn->prepare("SELECT * FROM Accertamento where idAccertamento=?");
-        $stmt->bind_param("i", $_REQUEST["idAccertamento"]);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows == 0) {
-        	die("id non trovato");
-        };
-        $row = $result->fetch_assoc();
-        $nuovo=false;
+    $conn = ConnettiAlDB();
+    $stmt = $conn->prepare("SELECT * FROM Accertamento where idAccertamento=?");
+    $stmt->bind_param("i", $_REQUEST["idAccertamento"]);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows == 0) {
+      die("id non trovato");
+    };
+    $row = $result->fetch_assoc();
+    $nuovo=false;
 
     } else $nuovo=true;
 
@@ -39,18 +36,9 @@
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaAccertamento.php">
     	<input type="hidden" name="idAccertamento" value="<? echo $row['idAccertamento']; ?>">
-      <div class="form-group">
-          <label for="numero" class="col-sm-2 control-label">Numero</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="numero" placeholder="numero" name="numero" <? if(isset($row['numero'])) echo "value='" .$row['numero']."'"; ?> readonly>
-          </div>
-      </div>
-      <div class="form-group">
-          <label for="anno" class="col-sm-2 control-label">anno</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="anno" placeholder="anno" name="anno" <? if(isset($row['anno'])) echo "value='" .$row['anno']."'"; ?> readonly>
-          </div>
-      </div>
+      <? GeneraFormGroup($row['numero'],"numero","Numero",true); ?>
+      <? GeneraFormGroup($row['anno'],"anno","Anno",true); ?>
+
       <div class="form-group">
           <label for="Data" class="col-sm-2 control-label">Data/Ora</label>
           <div class="col-sm-5">
@@ -60,30 +48,18 @@
             <input type="text" class="form-control" id="Ora" placeholder="Ora" name="Ora" <? if(isset($row['data'])) echo "value='" .date("G:i:s",strtotime($row['data']))."'"; ?><? if($readonly) echo "readonly";?>>
           </div>
       </div>
-      <div class="form-group">
-          <label for="Luogo" class="col-sm-2 control-label">Luogo</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="Luogo" placeholder="Luogo" name="Luogo" <? if(isset($row['luogo'])) echo "value='" .$row['luogo']."'"; if($readonly) echo "readonly";?>>
-          </div>
-      </div>
-      <div class="form-group">
-          <label for="Descrizione" class="col-sm-2 control-label">Descrizione</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="Luogo" placeholder="Descrizione" name="Descrizione" <? if(isset($row['descrizione'])) echo "value='" .$row['descrizione']."'"; if($readonly) echo "readonly";?>>
-          </div>
-      </div>
+
+      <? GeneraFormGroup($row['luogo'],"luogo","Luogo",false); ?>
+      <? GeneraFormGroup($row['descrizione'],"descrizione","Descrizione",false); ?>
+
+
       <div class="form-group">
           <label for="Descrizioneestesa" class="col-sm-2 control-label">Descrizione estesa</label>
           <div class="col-sm-10">
           <textarea rows="4" cols="50" id="Descrizioneestesa" class="form-control"  placeholder="Descrizione estesa" name="descrizione_estesa" <? if($readonly) echo "readonly";?>><? if(isset($row['descrizione_estesa'])) echo trim($row['descrizione_estesa']); if($readonly) echo "readonly";?></textarea>
           </div>
       </div>
-      <div class="form-group">
-          <label for="targa" class="col-sm-2 control-label">Targa</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="targa" placeholder="targa" name="targa" <? if(isset($row['targa'])) echo "value='" .$row['targa']."'"; if($readonly) echo "readonly";?>>
-          </div>
-      </div>
+      <? GeneraFormGroup($row['targa'],"targa","Targa",false); ?>
 
 
 	  <!--

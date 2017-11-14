@@ -1,21 +1,18 @@
 <?
 	include 'base.php';
 	if(!empty($_REQUEST["utente"])) {
-  		$conn = new mysqli($host, $username, $password, $database);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        } 
-        $stmt = $conn->prepare("SELECT * FROM Persona where login=?");
-        $stmt->bind_param("s", $_REQUEST["utente"]);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            if($row['password']==$_REQUEST["password"]) {setcookie("idutente", $row['idPersona']); header('Location: index.php');};
-        };
-        $conn->close();
+    $conn = ConnettiAlDB();
+    $stmt = $conn->prepare("SELECT * FROM Soggetto where login=?");
+    $stmt->bind_param("s", $_REQUEST["utente"]);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if($row['password']==$_REQUEST["password"]) {setcookie("idutente", $row['idSoggetto']); header('Location: index.php');};
+    };
+    $conn->close();
 
-    }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="it">

@@ -1,17 +1,20 @@
 <?
 	include 'base.php';
     RedirectSeMancaCookie();
-	if(isset($_REQUEST["idAccertamento"])) {
-        $conn = ConnettiAlDB();
-        $stmt = $conn->prepare("UPDATE Accertamento SET data=?, luogo=?, descrizione=?, descrizione_estesa=?, targa=? where idAccertamento=?");
-		$data=$_REQUEST["Data"]. " ".$_REQUEST["Ora"];
-		$data = date("Y-m-d H:i:s", strtotime($data));
-        $stmt->bind_param("sssssi", $data,
-		$conn->real_escape_string($_REQUEST["Luogo"]),
-		$conn->real_escape_string($_REQUEST["Descrizione"]),
-		$_REQUEST["descrizione_estesa"],
-		$conn->real_escape_string($_REQUEST["targa"]),
-		$_REQUEST["idAccertamento"]);
+	if(isset($_REQUEST["idSoggetto"])) {
+    $conn = ConnettiAlDB();
+    $stmt = $conn->prepare("UPDATE Soggetto SET nome=?, dataNascita=?, luogoNascita=?, residenza=?, tel=?, mail=?, documento=?, indirizzo=?, societa=? where idSoggetto=?");
+    $stmt->bind_param("sssssssssi", 
+		$conn->real_escape_string($_REQUEST["nome"]),
+		date("Y-m-d", strtotime($_REQUEST["dataNascita"])),
+		$conn->real_escape_string($_REQUEST["luogoNascita"]),
+		$conn->real_escape_string($_REQUEST["residenza"]),
+		$conn->real_escape_string($_REQUEST["tel"]),
+		$conn->real_escape_string($_REQUEST["mail"]),
+		$conn->real_escape_string($_REQUEST["documento"]),
+		$conn->real_escape_string($_REQUEST["indirizzo"]),
+        $conn->real_escape_string($_REQUEST["societa"]),
+        $_REQUEST["idSoggetto"]);
         $ok=$stmt->execute();
 	} else die("manca id");
 ?>
@@ -31,10 +34,10 @@
   <body>
     <div class="container">
     <? include 'menu.php'; ?>
-    <h1>Accertamento</h1>
-	<? if($ok) echo "Accertamento salvato"; else echo "Errore: Accertamento non salvato";?>
+    <h1>Soggetto</h1>
+	<? if($ok) echo "Soggetto salvato"; else echo "Errore: Soggetto non salvato";?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    
-	<button type="button" class="btn btn-default" onclick="window.location='accertamento.php?idAccertamento=<? echo $_REQUEST["idAccertamento"];?>'">Torna all'accertamento</button>    
+	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?idSoggetto=<? echo $_REQUEST["idSoggetto"];?>'">Torna al Soggetto</button>    
 	
 	</div>
 
