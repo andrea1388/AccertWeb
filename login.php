@@ -1,6 +1,6 @@
 <?
 	include 'base.php';
-	if(isset($_REQUEST["utente"])) {
+	if(!empty($_REQUEST["utente"])) {
   		$conn = new mysqli($host, $username, $password, $database);
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
@@ -33,7 +33,7 @@
   <body>
     <div class="container">
     <h1>Login</h1>
-    <? if(isset($_REQUEST["utente"])) echo "<h2><div class='alert alert-warning' role='alert'>Riconoscimento non avvenuto</div></h2>"; ?>
+    <? if(!empty($_REQUEST["utente"])) echo "<h2><div class='alert alert-warning' role='alert'>Riconoscimento non avvenuto</div></h2>"; ?>
       <form action='login.php' method='post'>
         <div class="form-group">
           <label for="utente">Nome utente</label>

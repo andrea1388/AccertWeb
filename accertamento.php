@@ -1,6 +1,6 @@
 <?
 	include 'base.php';
-    RedirectSeMancaCookie();
+  RedirectSeMancaCookie();
 	if(isset($_REQUEST["idAccertamento"])) {
   		$conn = new mysqli($host, $username, $password, $database);
         if ($conn->connect_error) {
