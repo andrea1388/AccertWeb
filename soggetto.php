@@ -1,7 +1,7 @@
 <?
 	include 'base.php';
     RedirectSeMancaCookie();
-	if(isset($_REQUEST["idSoggetto"])) {
+	if(!empty($_REQUEST["idSoggetto"])) {
     $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Soggetto where idSoggetto=?");
     $stmt->bind_param("i", $_REQUEST["idSoggetto"]);
@@ -12,9 +12,12 @@
     };
     $row = $result->fetch_assoc();
     $nuovo=false;
-
-    } else $nuovo=true;
-
+    $dn=($row['dataNascita']!=NULL) ? date("d/m/Y", strtotime($row['dataNascita'])) : '';
+  } else {
+      $nuovo=true;
+      $dn="";
+  }
+    
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -35,10 +38,10 @@
     <h1>Soggetto</h1>
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaSoggetto.php">
-    	<input type="hidden" name="idSoggetto" value="<? echo $row['idSoggetto']; ?>">
+      <input type="hidden" name="idSoggetto" value="<?echo $row['idSoggetto']; ?>">
       <? GeneraFormGroup($row['nome'],"nome","Nome",false); ?>
       <? GeneraFormGroup($row['societa'],"societa","Societ&agrave;",false); ?>
-      <? GeneraFormGroup($row['dataNascita'],"dataNascita","Data di nascita",false); ?>
+      <? GeneraFormGroup($dn,"dataNascita","Data di nascita",false); ?>
       <? GeneraFormGroup($row['luogoNascita'],"luogoNascita","Luogo di nascita",false); ?>
       <? GeneraFormGroup($row['residenza'],"residenza","Luogo di residenza o domicilio",false); ?>
       <? GeneraFormGroup($row['indirizzo'],"indirizzo","Indirizzo",false); ?>

@@ -1,6 +1,6 @@
 <?
 	include 'base.php';
-  RedirectSeMancaCookie();
+    RedirectSeMancaCookie();
 ?>
 <!DOCTYPE html>
 <html lang="it">

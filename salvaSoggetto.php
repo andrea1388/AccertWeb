@@ -1,22 +1,42 @@
 <?
-	include 'base.php';
+  	include 'base.php';
     RedirectSeMancaCookie();
-	if(isset($_REQUEST["idSoggetto"])) {
     $conn = ConnettiAlDB();
+    $nome = ($_REQUEST["nome"] != '') ? $_REQUEST["nome"] : NULL;
+    $dn = ($_REQUEST["dataNascita"] != '') ? date("Y-m-d", strtotime($_REQUEST["dataNascita"])) : NULL;
+    if(!empty($_REQUEST["idSoggetto"])) {
     $stmt = $conn->prepare("UPDATE Soggetto SET nome=?, dataNascita=?, luogoNascita=?, residenza=?, tel=?, mail=?, documento=?, indirizzo=?, societa=? where idSoggetto=?");
     $stmt->bind_param("sssssssssi", 
-		$conn->real_escape_string($_REQUEST["nome"]),
-		date("Y-m-d", strtotime($_REQUEST["dataNascita"])),
+		$nome,
+		$dn,
 		$conn->real_escape_string($_REQUEST["luogoNascita"]),
 		$conn->real_escape_string($_REQUEST["residenza"]),
 		$conn->real_escape_string($_REQUEST["tel"]),
 		$conn->real_escape_string($_REQUEST["mail"]),
 		$conn->real_escape_string($_REQUEST["documento"]),
 		$conn->real_escape_string($_REQUEST["indirizzo"]),
-        $conn->real_escape_string($_REQUEST["societa"]),
-        $_REQUEST["idSoggetto"]);
-        $ok=$stmt->execute();
-	} else die("manca id");
+    $conn->real_escape_string($_REQUEST["societa"]),
+    $_REQUEST["idSoggetto"]);
+    $ok=$stmt->execute();
+    $id=$_REQUEST["idSoggetto"];
+	} else {
+    $tiposoggetto=0;
+    $stmt = $conn->prepare("insert into Soggetto (nome, dataNascita, luogoNascita, residenza, tel, mail, documento, indirizzo, societa, tipo) VALUES (?,?,?,?,?,?,?,?,?,?)");
+    $stmt->bind_param("sssssssssi", 
+		$nome,
+		$dn,
+		$conn->real_escape_string($_REQUEST["luogoNascita"]),
+		$conn->real_escape_string($_REQUEST["residenza"]),
+		$conn->real_escape_string($_REQUEST["tel"]),
+		$conn->real_escape_string($_REQUEST["mail"]),
+		$conn->real_escape_string($_REQUEST["documento"]),
+		$conn->real_escape_string($_REQUEST["indirizzo"]),
+    $conn->real_escape_string($_REQUEST["societa"]),
+    $tiposoggetto);
+    $ok=$stmt->execute();
+    $id=$conn->insert_id;
+    
+  }
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -35,9 +55,9 @@
     <div class="container">
     <? include 'menu.php'; ?>
     <h1>Soggetto</h1>
-	<? if($ok) echo "Soggetto salvato"; else echo "Errore: Soggetto non salvato";?>
+	<? if($ok) echo "Soggetto salvato id=". $id; else echo "Errore: Soggetto non salvato: " . $stmt->error;?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    
-	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?idSoggetto=<? echo $_REQUEST["idSoggetto"];?>'">Torna al Soggetto</button>    
+	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?idSoggetto=<? echo $id;?>'">Torna al Soggetto</button>    
 	
 	</div>
 
@@ -47,3 +67,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>
+<? $conn->close(); ?>
