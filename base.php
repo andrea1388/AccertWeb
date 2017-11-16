@@ -30,4 +30,8 @@
     return $conn;
   }
 
+  function EscapeIfNotEMptyOrNull($conn,$nullableval) {
+    return ($nullableval != '') ? $conn->real_escape_string($nullableval) : NULL;
+  }
+
 ?>
