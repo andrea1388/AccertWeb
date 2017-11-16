@@ -1,4 +1,5 @@
 <?
+  error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 
   function RedirectSeMancaCookie() {
     if(!isset($_COOKIE['idutente'])) header('Location: login.php');

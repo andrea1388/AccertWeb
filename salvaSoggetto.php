@@ -1,42 +1,64 @@
 <?
   	include 'base.php';
     RedirectSeMancaCookie();
+
+    $ok=true;
+    $id=$_REQUEST["idSoggetto"];
     $conn = ConnettiAlDB();
+    
+
+    // imposta variabili da salvare
     $nome=EscapeIfNotEMptyOrNull($conn,$_REQUEST["nome"]);
     $societa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["societa"]);
     $dn = ($_REQUEST["dataNascita"] != '') ? date("Y-m-d", strtotime($_REQUEST["dataNascita"])) : NULL;
-    $ok=true;
-    $id=$_REQUEST["idSoggetto"];
+    $ln=EscapeIfNotEMptyOrNull($conn,$_REQUEST["luogoNascita"]);
+    $re=EscapeIfNotEMptyOrNull($conn,$_REQUEST["residenza"]);
+    $tel=EscapeIfNotEMptyOrNull($conn,$_REQUEST["tel"]);
+    $mail=EscapeIfNotEMptyOrNull($conn,$_REQUEST["mail"]);
+    $doc=EscapeIfNotEMptyOrNull($conn,$_REQUEST["documento"]);
+    $ind=EscapeIfNotEMptyOrNull($conn,$_REQUEST["indirizzo"]);
+    
+    
+    
+
+    // controlli comuni
     if(empty($nome) && empty($societa)) {$ok=false; $errore="Inserire nome o Societ&agrave;";};
+    
+    
+    
+    
     if($ok) {
       if(!empty($id)) {
+        // controlli per update
         $stmt = $conn->prepare("UPDATE Soggetto SET nome=?, dataNascita=?, luogoNascita=?, residenza=?, tel=?, mail=?, documento=?, indirizzo=?, societa=? where idSoggetto=?");
         $stmt->bind_param("sssssssssi", 
         $nome,
         $dn,
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["luogoNascita"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["residenza"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["tel"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["mail"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["documento"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["indirizzo"]),
+        $ln,
+        $re,
+        $tel,
+        $mail,
+        $doc,
+        $indirizzo,
         $societa,
-        $_REQUEST["idSoggetto"]);
+        $id);
         $ok=$stmt->execute();
         $errore=$stmt->error;
         
       } else {
+        // controlli per insert
+        // setup campi default
         $tiposoggetto=0;
         $stmt = $conn->prepare("insert into Soggetto (nome, dataNascita, luogoNascita, residenza, tel, mail, documento, indirizzo, societa, tipo) VALUES (?,?,?,?,?,?,?,?,?,?)");
         $stmt->bind_param("sssssssssi", 
         $nome,
         $dn,
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["luogoNascita"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["residenza"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["tel"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["mail"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["documento"]),
-        EscapeIfNotEMptyOrNull($conn,$_REQUEST["indirizzo"]),
+        $ln,
+        $re,
+        $tel,
+        $mail,
+        $doc,
+        $indirizzo,
         $societa,
         $tiposoggetto);
         $ok=$stmt->execute();
@@ -49,8 +71,9 @@
         }
           
       }
-    
+      
     }
+    $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -80,4 +103,3 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>
-<? $conn->close(); ?>

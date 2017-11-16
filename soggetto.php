@@ -1,6 +1,7 @@
 <?
 	include 'base.php';
-    RedirectSeMancaCookie();
+  RedirectSeMancaCookie();
+  $readonly=!isset($_REQUEST["edit"]);
 	if(!empty($_REQUEST["idSoggetto"])) {
     $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Soggetto where idSoggetto=?");
@@ -39,17 +40,19 @@
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaSoggetto.php">
       <input type="hidden" name="idSoggetto" value="<?echo $row['idSoggetto']; ?>">
-      <? GeneraFormGroup($row['nome'],"nome","Nome",false); ?>
-      <? GeneraFormGroup($row['societa'],"societa","Societ&agrave;",false); ?>
-      <? GeneraFormGroup($dn,"dataNascita","Data di nascita",false); ?>
-      <? GeneraFormGroup($row['luogoNascita'],"luogoNascita","Luogo di nascita",false); ?>
-      <? GeneraFormGroup($row['residenza'],"residenza","Luogo di residenza o domicilio",false); ?>
-      <? GeneraFormGroup($row['indirizzo'],"indirizzo","Indirizzo",false); ?>
-      <? GeneraFormGroup($row['tel'],"tel","Telefono",false); ?>
-      <? GeneraFormGroup($row['mail'],"mail","e-mail",false); ?>
+      <? GeneraFormGroup($row['nome'],"nome","Nome",$readonly); ?>
+      <? GeneraFormGroup($row['societa'],"societa","Societ&agrave;",$readonly); ?>
+      <? GeneraFormGroup($dn,"dataNascita","Data di nascita",$readonly); ?>
+      <? GeneraFormGroup($row['luogoNascita'],"luogoNascita","Luogo di nascita",$readonly); ?>
+      <? GeneraFormGroup($row['residenza'],"residenza","Luogo di residenza o domicilio",$readonly); ?>
+      <? GeneraFormGroup($row['indirizzo'],"indirizzo","Indirizzo",$readonly); ?>
+      <? GeneraFormGroup($row['tel'],"tel","Telefono",$readonly); ?>
+      <? GeneraFormGroup($row['mail'],"mail","e-mail",$readonly); ?>
+      <? GeneraFormGroup($row['documento'],"documento","Documento",$readonly); ?>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-default">Salva</button>
+          <button type="button" class="btn btn-default" onclick="window.location='soggetto.php?edit&idSoggetto=<? echo $_REQUEST["idSoggetto"];?>'">Abilita modifiche</button>    
         </div>
       </div>
     </form>
