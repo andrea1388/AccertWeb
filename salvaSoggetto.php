@@ -3,7 +3,7 @@
     RedirectSeMancaCookie();
 
     $ok=true;
-    $id=$_REQUEST["idSoggetto"];
+    $id=$_REQUEST["id"];
     $conn = ConnettiAlDB();
     
 
@@ -94,7 +94,7 @@
     <h1>Soggetto</h1>
 	<? if($ok) echo "Soggetto salvato id=". $id; else echo "Errore: Soggetto non salvato: " . $errore; ?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    
-	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?idSoggetto=<? echo $id;?>'">Torna al Soggetto</button>    
+	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?id=<? echo $id;?>'">Torna al Soggetto</button>    
 	
 	</div>
 

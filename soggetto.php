@@ -2,10 +2,11 @@
 	include 'base.php';
   RedirectSeMancaCookie();
   $readonly=!isset($_REQUEST["edit"]);
-	if(!empty($_REQUEST["idSoggetto"])) {
+  $id=$_REQUEST["id"];
+	if(!empty($id)) {
     $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Soggetto where idSoggetto=?");
-    $stmt->bind_param("i", $_REQUEST["idSoggetto"]);
+    $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
@@ -39,7 +40,7 @@
     <h1>Soggetto</h1>
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaSoggetto.php">
-      <input type="hidden" name="idSoggetto" value="<?echo $row['idSoggetto']; ?>">
+      <input type="hidden" name="id" value="<?echo $id; ?>">
       <? GeneraFormGroup($row['nome'],"nome","Nome",$readonly); ?>
       <? GeneraFormGroup($row['societa'],"societa","Societ&agrave;",$readonly); ?>
       <? GeneraFormGroup($dn,"dataNascita","Data di nascita",$readonly); ?>
@@ -52,7 +53,7 @@
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-default">Salva</button>
-          <button type="button" class="btn btn-default" onclick="window.location='soggetto.php?edit&idSoggetto=<? echo $_REQUEST["idSoggetto"];?>'">Abilita modifiche</button>    
+          <button type="button" class="btn btn-default" onclick="window.location='soggetto.php?edit&id=<? echo $id;?>'">Abilita modifiche</button>    
         </div>
       </div>
     </form>

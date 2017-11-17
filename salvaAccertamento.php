@@ -1,19 +1,49 @@
 <?
 	include 'base.php';
-    RedirectSeMancaCookie();
-	if(isset($_REQUEST["idAccertamento"])) {
-        $conn = ConnettiAlDB();
-        $stmt = $conn->prepare("UPDATE Accertamento SET data=?, luogo=?, descrizione=?, descrizione_estesa=?, targa=? where idAccertamento=?");
-		$data=$_REQUEST["Data"]. " ".$_REQUEST["Ora"];
+  RedirectSeMancaCookie();
+    
+  $ok=true;
+  $id=$_REQUEST["id"];
+  $conn = ConnettiAlDB();
+  
+  // imposta variabili da salvare
+  $luogo=EscapeIfNotEMptyOrNull($conn,$_REQUEST["luogo"]);
+  $descrizione=EscapeIfNotEMptyOrNull($conn,$_REQUEST["descrizione"]);
+  $descrizione_estesa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["descrizione_estesa"]);
+  $targa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["targa"]);
+  try {
+    $data=$_REQUEST["Data"]. " ".$_REQUEST["Ora"];
 		$data = date("Y-m-d H:i:s", strtotime($data));
-        $stmt->bind_param("sssssi", $data,
-		$conn->real_escape_string($_REQUEST["Luogo"]),
-		$conn->real_escape_string($_REQUEST["Descrizione"]),
-		$_REQUEST["descrizione_estesa"],
-		$conn->real_escape_string($_REQUEST["targa"]),
-		$_REQUEST["idAccertamento"]);
+  } catch (Exception $e) {
+    $ok=false;
+    $errore="Data/ora errata";
+  }
+
+  // controlli comuni
+  if(empty($descrizione)) {$ok=false; $errore="Inserire descrizione";};
+
+  if($ok) {
+    if(!empty($id)) {
+      $stmt = $conn->prepare("UPDATE Accertamento SET data=?, luogo=?, descrizione=?, descrizione_estesa=?, targa=? where idAccertamento=?");
+      $stmt->bind_param("sssssi", $data,$luogo,$descrizione,$descrizione_estesa,
+      $targa,$id);
+      $ok=$stmt->execute();
+      $errore=$stmt->error;
+    } else  {
+        // controlli per insert
+        // setup campi default
+        $stmt = $conn->prepare("insert into Accertamento (data, luogo, descrizione, descrizione_estesa, targa) VALUES (?,?,?,?,?)");
+        $stmt->bind_param("sssss", $data,$luogo,$descrizione,$descrizione_estesa,
+        $targa);
         $ok=$stmt->execute();
-	} else die("manca id");
+        $errore=$stmt->error;
+        if($ok) {
+          $id=$conn->insert_id;
+        }
+    }
+
+  }
+  $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -32,9 +62,9 @@
     <div class="container">
     <? include 'menu.php'; ?>
     <h1>Accertamento</h1>
-	<? if($ok) echo "Accertamento salvato"; else echo "Errore: Accertamento non salvato";?>
+	<? if($ok) echo "Accertamento salvato id=". $id; else echo "Errore: Accertamento non salvato:" . $errore;?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    
-	<button type="button" class="btn btn-default" onclick="window.location='accertamento.php?idAccertamento=<? echo $_REQUEST["idAccertamento"];?>'">Torna all'accertamento</button>    
+	<button type="button" class="btn btn-default" onclick="window.location='accertamento.php?id=<? echo $id;?>'">Torna all'accertamento</button>    
 	
 	</div>
 

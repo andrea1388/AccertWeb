@@ -1,10 +1,12 @@
 <?
 	include 'base.php';
   RedirectSeMancaCookie();
-	if(isset($_REQUEST["idAccertamento"])) {
+  $readonly=!isset($_REQUEST["edit"]);
+  $id=$_REQUEST["id"];
+	if(!empty($id)) {
     $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Accertamento where idAccertamento=?");
-    $stmt->bind_param("i", $_REQUEST["idAccertamento"]);
+    $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
@@ -12,6 +14,7 @@
     };
     $row = $result->fetch_assoc();
     $nuovo=false;
+    
 
     } else $nuovo=true;
 
@@ -35,9 +38,9 @@
     <h1>Accertamento</h1>
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaAccertamento.php">
-    	<input type="hidden" name="idAccertamento" value="<? echo $row['idAccertamento']; ?>">
-      <? GeneraFormGroup($row['numero'],"numero","Numero",true); ?>
-      <? GeneraFormGroup($row['anno'],"anno","Anno",true); ?>
+    	<input type="hidden" name="id" value="<? echo $id; ?>">
+      <? GeneraFormGroup($row['numero'],"numero","Numero",$readonly); ?>
+      <? GeneraFormGroup($row['anno'],"anno","Anno",$readonly); ?>
 
       <div class="form-group">
           <label for="Data" class="col-sm-2 control-label">Data/Ora</label>
@@ -49,17 +52,17 @@
           </div>
       </div>
 
-      <? GeneraFormGroup($row['luogo'],"luogo","Luogo",false); ?>
-      <? GeneraFormGroup($row['descrizione'],"descrizione","Descrizione",false); ?>
+      <? GeneraFormGroup($row['luogo'],"luogo","Luogo",$readonly); ?>
+      <? GeneraFormGroup($row['descrizione'],"descrizione","Descrizione",$readonly); ?>
 
 
       <div class="form-group">
           <label for="Descrizioneestesa" class="col-sm-2 control-label">Descrizione estesa</label>
           <div class="col-sm-10">
-          <textarea rows="4" cols="50" id="Descrizioneestesa" class="form-control"  placeholder="Descrizione estesa" name="descrizione_estesa" <? if($readonly) echo "readonly";?>><? if(isset($row['descrizione_estesa'])) echo trim($row['descrizione_estesa']); if($readonly) echo "readonly";?></textarea>
+          <textarea rows="4" cols="50" id="Descrizioneestesa" class="form-control"  placeholder="Descrizione estesa" name="descrizione_estesa" <? if($readonly) echo "readonly"; ?>> <? if(isset($row['descrizione_estesa'])) echo trim($row['descrizione_estesa']); ?></textarea>
           </div>
       </div>
-      <? GeneraFormGroup($row['targa'],"targa","Targa",false); ?>
+      <? GeneraFormGroup($row['targa'],"targa","Targa",$readonly); ?>
 
 
 	  <!--
@@ -111,6 +114,8 @@
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-default">Salva</button>
+          <button type="button" class="btn btn-default" onclick="window.location='accertamento.php?edit&id=<? echo $id;?>'">Abilita modifiche</button>    
+
         </div>
       </div>
     </form>
