@@ -1,23 +1,37 @@
 <?
+  class Soggetto {
+    public $nome;
+    public $societa;
+    public $dataNascita;
+    public $luogoNascita;
+    public $residenza;
+    public $indirizzo;
+    public $tel;
+    public $mail;
+    public $documento;
+    public $idSoggetto;
+
+  }
 	include 'base.php';
   RedirectSeMancaCookie();
-  $readonly=!isset($_REQUEST["edit"]);
-  $id=$_REQUEST["id"];
-	if(!empty($id)) {
+  
+	if(!empty($_REQUEST["idSoggetto"])) {
     $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Soggetto where idSoggetto=?");
-    $stmt->bind_param("i", $id);
+    $stmt->bind_param("i", $_REQUEST["idSoggetto"]);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows == 0) {
       die("id non trovato");
     };
-    $row = $result->fetch_assoc();
+    $sogg=$result->fetch_object("Soggetto");
     $nuovo=false;
-    $dn=($row['dataNascita']!=NULL) ? date("d/m/Y", strtotime($row['dataNascita'])) : '';
+    $readonly=!isset($_REQUEST["edit"]);
   } else {
       $nuovo=true;
+      $sogg=new Soggetto();
       $dn="";
+      $readonly=false;
   }
     
 ?>
@@ -40,20 +54,22 @@
     <h1>Soggetto</h1>
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaSoggetto.php">
-      <input type="hidden" name="id" value="<?echo $id; ?>">
-      <? GeneraFormGroup($row['nome'],"nome","Nome",$readonly); ?>
-      <? GeneraFormGroup($row['societa'],"societa","Societ&agrave;",$readonly); ?>
-      <? GeneraFormGroup($dn,"dataNascita","Data di nascita",$readonly); ?>
-      <? GeneraFormGroup($row['luogoNascita'],"luogoNascita","Luogo di nascita",$readonly); ?>
-      <? GeneraFormGroup($row['residenza'],"residenza","Luogo di residenza o domicilio",$readonly); ?>
-      <? GeneraFormGroup($row['indirizzo'],"indirizzo","Indirizzo",$readonly); ?>
-      <? GeneraFormGroup($row['tel'],"tel","Telefono",$readonly); ?>
-      <? GeneraFormGroup($row['mail'],"mail","e-mail",$readonly); ?>
-      <? GeneraFormGroup($row['documento'],"documento","Documento",$readonly); ?>
+      <input type="hidden" name="idSoggetto" value="<?echo $sogg->idSoggetto; ?>">
+      <? GeneraFormGroup($sogg->nome,"nome","Nome",$readonly); ?>
+      <? GeneraFormGroup($sogg->societa,"societa","Societ&agrave;",$readonly); ?>
+      <? GeneraFormGroup(FormattaData($sogg->dataNascita,"d/m/Y"),"dataNascita","Data di nascita",$readonly); ?>
+      <? GeneraFormGroup($sogg->luogoNascita,"luogoNascita","Luogo di nascita",$readonly); ?>
+      <? GeneraFormGroup($sogg->residenza,"residenza","Luogo di residenza o domicilio",$readonly); ?>
+      <? GeneraFormGroup($sogg->indirizzo,"indirizzo","Indirizzo",$readonly); ?>
+      <? GeneraFormGroup($sogg->tel,"tel","Telefono",$readonly); ?>
+      <? GeneraFormGroup($sogg->mail,"mail","e-mail",$readonly); ?>
+      <? GeneraFormGroup($sogg->documento,"documento","Documento",$readonly); ?>
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-default">Salva</button>
-          <button type="button" class="btn btn-default" onclick="window.location='soggetto.php?edit&id=<? echo $id;?>'">Abilita modifiche</button>    
+          <? if($readonly) :?>
+          <button type="button" class="btn btn-default" onclick="window.location='soggetto.php?edit&idSoggetto=<? echo $_REQUEST["idSoggetto"];?>'">Abilita modifiche</button>    
+          <?php endif; ?> 
         </div>
       </div>
     </form>

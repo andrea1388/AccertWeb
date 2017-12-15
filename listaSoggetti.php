@@ -33,7 +33,7 @@
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
-                echo "<tr onclick=\"window.document.location='soggetto.php?id=".$row["idSoggetto"]."'\";><td>" . $row["nome"]. "</td><td>" . $row["residenza"]. " - " . $row["indirizzo"]. "</td><td>" . $row["tel"] . "</td></tr>";
+                echo "<tr onclick=\"window.document.location='soggetto.php?idSoggetto=".$row["idSoggetto"]."'\";><td>" . $row["nome"]. "</td><td>" . $row["residenza"]. " - " . $row["indirizzo"]. "</td><td>" . $row["tel"] . "</td></tr>";
             }
         } else {
             echo "0 results";

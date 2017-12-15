@@ -3,14 +3,18 @@
     RedirectSeMancaCookie();
 
     $ok=true;
-    $id=$_REQUEST["id"];
+    $id=$_REQUEST["idSoggetto"];
     $conn = ConnettiAlDB();
     
 
     // imposta variabili da salvare
+    if($_REQUEST["dataNascita"] != '')
+    {
+      $dn = DateTime::createFromFormat("d/m/Y",EscapeIfNotEMptyOrNull($conn,$_REQUEST["dataNascita"]))->format("Y-m-d");
+    } else $dn=NULL;
     $nome=EscapeIfNotEMptyOrNull($conn,$_REQUEST["nome"]);
     $societa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["societa"]);
-    $dn = ($_REQUEST["dataNascita"] != '') ? date("Y-m-d", strtotime($_REQUEST["dataNascita"])) : NULL;
+    
     $ln=EscapeIfNotEMptyOrNull($conn,$_REQUEST["luogoNascita"]);
     $re=EscapeIfNotEMptyOrNull($conn,$_REQUEST["residenza"]);
     $tel=EscapeIfNotEMptyOrNull($conn,$_REQUEST["tel"]);
@@ -18,8 +22,7 @@
     $doc=EscapeIfNotEMptyOrNull($conn,$_REQUEST["documento"]);
     $ind=EscapeIfNotEMptyOrNull($conn,$_REQUEST["indirizzo"]);
     
-    
-    
+
 
     // controlli comuni
     if(empty($nome) && empty($societa)) {$ok=false; $errore="Inserire nome o Societ&agrave;";};
@@ -39,7 +42,7 @@
         $tel,
         $mail,
         $doc,
-        $indirizzo,
+        $ind,
         $societa,
         $id);
         $ok=$stmt->execute();
@@ -58,7 +61,7 @@
         $tel,
         $mail,
         $doc,
-        $indirizzo,
+        $ind,
         $societa,
         $tiposoggetto);
         $ok=$stmt->execute();
@@ -94,7 +97,7 @@
     <h1>Soggetto</h1>
 	<? if($ok) echo "Soggetto salvato id=". $id; else echo "Errore: Soggetto non salvato: " . $errore; ?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    
-	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?id=<? echo $id;?>'">Torna al Soggetto</button>    
+	<button type="button" class="btn btn-default" onclick="window.location='soggetto.php?idSoggetto=<? echo $id;?>'">Torna al Soggetto</button>    
 	
 	</div>
 

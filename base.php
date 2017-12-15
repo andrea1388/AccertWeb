@@ -35,4 +35,10 @@
     return ($nullableval != '') ? $conn->real_escape_string($nullableval) : NULL;
   }
 
+  function FormattaData($string,$format)
+  {
+    return ($string!=NULL) ? date($format, strtotime($string)) : '';
+
+  }
+
 ?>

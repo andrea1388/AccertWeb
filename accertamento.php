@@ -2,7 +2,10 @@
 	include 'base.php';
   RedirectSeMancaCookie();
   $readonly=!isset($_REQUEST["edit"]);
-  $id=$_REQUEST["id"];
+  try {
+    $id=$_REQUEST["id"];
+  }
+  catch (Exception $e) {};
 	if(!empty($id)) {
     $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Accertamento where idAccertamento=?");
@@ -16,7 +19,18 @@
     $nuovo=false;
     
 
-    } else $nuovo=true;
+    } else 
+    {
+      $nuovo=true;
+      $readonly=false;
+      $row['numero']="";    
+      $row['anno']=""; 
+      $row['data']="";
+      $row['luogo']="";
+      $row['descrizione']="";
+      $row['descrizione_estesa']="";
+      $row['targa']="";
+    }
 
 ?>
 <!DOCTYPE html>
@@ -39,8 +53,8 @@
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaAccertamento.php">
     	<input type="hidden" name="id" value="<? echo $id; ?>">
-      <? GeneraFormGroup($row['numero'],"numero","Numero",$readonly); ?>
-      <? GeneraFormGroup($row['anno'],"anno","Anno",$readonly); ?>
+      <? GeneraFormGroup($row['numero'],"numero","Numero",true); ?>
+      <? GeneraFormGroup($row['anno'],"anno","Anno",true); ?>
 
       <div class="form-group">
           <label for="Data" class="col-sm-2 control-label">Data/Ora</label>
