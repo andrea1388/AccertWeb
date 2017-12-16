@@ -3,7 +3,6 @@
   RedirectSeMancaCookie();
     
   $ok=true;
-  $id=$_REQUEST["id"];
   $conn = ConnettiAlDB();
   
   // imposta variabili da salvare
@@ -11,9 +10,9 @@
   $descrizione=EscapeIfNotEMptyOrNull($conn,$_REQUEST["descrizione"]);
   $descrizione_estesa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["descrizione_estesa"]);
   $targa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["targa"]);
+  $anno=intval(EscapeIfNotEMptyOrNull($conn,$_REQUEST["anno"]));
   try {
-    $data=$_REQUEST["Data"]. " ".$_REQUEST["Ora"];
-		$data = date("Y-m-d H:i:s", strtotime($data));
+    $data = DateTime::createFromFormat("d/m/Y H:i:s",EscapeIfNotEMptyOrNull($conn,$_REQUEST["Data"]. " ".$_REQUEST["Ora"]))->format("Y-m-d H:i:s");
   } catch (Exception $e) {
     $ok=false;
     $errore="Data/ora errata";
@@ -21,26 +20,39 @@
 
   // controlli comuni
   if(empty($descrizione)) {$ok=false; $errore="Inserire descrizione";};
+  if($anno<2000 || $anno>2099) {$ok=false; $errore="Inserire l'anno";};
 
   if($ok) {
-    if(!empty($id)) {
+    if(!empty($_REQUEST["idAccertamento"])) 
+    {
+      $id=EscapeIfNotEMptyOrNull($conn,$_REQUEST["idAccertamento"]);
       $stmt = $conn->prepare("UPDATE Accertamento SET data=?, luogo=?, descrizione=?, descrizione_estesa=?, targa=? where idAccertamento=?");
       $stmt->bind_param("sssssi", $data,$luogo,$descrizione,$descrizione_estesa,
       $targa,$id);
       $ok=$stmt->execute();
       $errore=$stmt->error;
-    } else  {
-        // controlli per insert
-        // setup campi default
-        $stmt = $conn->prepare("insert into Accertamento (data, luogo, descrizione, descrizione_estesa, targa) VALUES (?,?,?,?,?)");
-        $stmt->bind_param("sssss", $data,$luogo,$descrizione,$descrizione_estesa,
-        $targa);
-        $ok=$stmt->execute();
-        $errore=$stmt->error;
-        if($ok) {
-          $id=$conn->insert_id;
-        }
+    } 
+    else  
+    {
+      // controlli per insert
+      // setup campi default
+      $sql="SELECT MAX(numero) FROM Accertamento where anno=" . $anno;
+      $res=$conn->query($sql);
+      if($res->num_rows >0)
+      {
+        $row = $res->fetch_row();
+        $numero=intval($row[0])+1;
+      }
+      else $numero=1;
+      //echo "num=".$numero."<br>";
+      $stmt = $conn->prepare("insert into Accertamento (numero, anno, data, luogo, descrizione, descrizione_estesa, targa) VALUES (?,?,?,?,?,?,?)");
+      $stmt->bind_param("iisssss", $numero, $anno, $data,$luogo,$descrizione,$descrizione_estesa,$targa);
+      $ok=$stmt->execute();
+      $errore=$stmt->error;
+      if($ok) {
+        $id=$conn->insert_id;
     }
+  }
 
   }
   $conn->close();
@@ -62,9 +74,9 @@
     <div class="container">
     <? include 'menu.php'; ?>
     <h1>Accertamento</h1>
-	<? if($ok) echo "Accertamento salvato id=". $id; else echo "Errore: Accertamento non salvato:" . $errore;?>
+	<? if($ok) echo "Accertamento salvato"; else echo "Errore: Accertamento non salvato: " . $errore;?>
 	<button type="button" class="btn btn-default" onclick="window.location='index.php'">Home</button>    
-	<button type="button" class="btn btn-default" onclick="window.location='accertamento.php?id=<? echo $id;?>'">Torna all'accertamento</button>    
+	<button type="button" class="btn btn-default" onclick="window.location='accertamento.php?idAccertamento=<? echo $id;?>'">Torna all'accertamento</button>    
 	
 	</div>
 

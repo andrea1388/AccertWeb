@@ -1,13 +1,27 @@
-<?
+<?  
+  class Accertamento {
+    public $idAccertamento;
+    public $numero;
+    public $anno;
+    public $data;
+    public $luogo;
+    public $descrizione;
+    public $descrizione_estesa;
+    public $targa;
+  }
+
 	include 'base.php';
   RedirectSeMancaCookie();
-  $readonly=!isset($_REQUEST["edit"]);
+ 
+  /*
   try {
-    $id=$_REQUEST["id"];
+    $id=$_REQUEST["idAccertamento"];
   }
   catch (Exception $e) {};
-	if(!empty($id)) {
+  */
+  if(!empty($_REQUEST["idAccertamento"])) {
     $conn = ConnettiAlDB();
+    $id=EscapeIfNotEMptyOrNull($conn,$_REQUEST["idAccertamento"]);
     $stmt = $conn->prepare("SELECT * FROM Accertamento where idAccertamento=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -15,22 +29,20 @@
     if ($result->num_rows == 0) {
       die("id non trovato");
     };
-    $row = $result->fetch_assoc();
+    $acc=$result->fetch_object("Accertamento");
     $nuovo=false;
-    
-
-    } else 
-    {
+    $readonly=!isset($_REQUEST["edit"]);
+  } 
+  else 
+  {
       $nuovo=true;
       $readonly=false;
-      $row['numero']="";    
-      $row['anno']=""; 
-      $row['data']="";
-      $row['luogo']="";
-      $row['descrizione']="";
-      $row['descrizione_estesa']="";
-      $row['targa']="";
-    }
+      $acc=new Accertamento();
+      $d=new DateTime();
+      $acc->data=$d->format("Y-m-d G:i:s");
+      $acc->anno=$d->format("Y");
+      $id=0;
+  }
 
 ?>
 <!DOCTYPE html>
@@ -52,31 +64,31 @@
     <h1>Accertamento</h1>
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaAccertamento.php">
-    	<input type="hidden" name="id" value="<? echo $id; ?>">
-      <? GeneraFormGroup($row['numero'],"numero","Numero",true); ?>
-      <? GeneraFormGroup($row['anno'],"anno","Anno",true); ?>
+    	<input type="hidden" name="idAccertamento" value="<? echo $id; ?>">
+      <? GeneraFormGroup($acc->numero,"numero","Numero",true); ?>
+      <? GeneraFormGroup($acc->anno,"anno","Anno",true); ?>
 
       <div class="form-group">
           <label for="Data" class="col-sm-2 control-label">Data/Ora</label>
           <div class="col-sm-5">
-            <input type="text" class="form-control" id="Data" placeholder="Data" name="Data" <? if(isset($row['data'])) echo "value='" .date("j/n/Y",strtotime($row['data']))."'"; ?><? if($readonly) echo "readonly";?>>
+            <input type="text" class="form-control" id="Data" placeholder="Data" name="Data" value="<? echo FormattaData($acc->data,"d/m/Y"); ?>" <? if($readonly) echo " readonly";?>>
           </div>
           <div class="col-sm-5">
-            <input type="text" class="form-control" id="Ora" placeholder="Ora" name="Ora" <? if(isset($row['data'])) echo "value='" .date("G:i:s",strtotime($row['data']))."'"; ?><? if($readonly) echo "readonly";?>>
+            <input type="text" class="form-control" id="Ora" placeholder="Ora" name="Ora"  value="<? echo FormattaData($acc->data,"G:i:s"); ?>" <? if($readonly) echo " readonly";?>>
           </div>
       </div>
 
-      <? GeneraFormGroup($row['luogo'],"luogo","Luogo",$readonly); ?>
-      <? GeneraFormGroup($row['descrizione'],"descrizione","Descrizione",$readonly); ?>
+      <? GeneraFormGroup($acc->luogo,"luogo","Luogo",$readonly); ?>
+      <? GeneraFormGroup($acc->descrizione,"descrizione","Descrizione",$readonly); ?>
 
 
       <div class="form-group">
           <label for="Descrizioneestesa" class="col-sm-2 control-label">Descrizione estesa</label>
           <div class="col-sm-10">
-          <textarea rows="4" cols="50" id="Descrizioneestesa" class="form-control"  placeholder="Descrizione estesa" name="descrizione_estesa" <? if($readonly) echo "readonly"; ?>> <? if(isset($row['descrizione_estesa'])) echo trim($row['descrizione_estesa']); ?></textarea>
+          <textarea rows="4" cols="50" id="Descrizioneestesa" class="form-control"  placeholder="Descrizione estesa" name="descrizione_estesa" <? if($readonly) echo " readonly"; ?>> <? echo trim($acc->descrizione_estesa); ?></textarea>
           </div>
       </div>
-      <? GeneraFormGroup($row['targa'],"targa","Targa",$readonly); ?>
+      <? GeneraFormGroup($acc->targa,"targa","Targa",$readonly); ?>
 
 
 	  <!--
@@ -128,8 +140,9 @@
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-default">Salva</button>
-          <button type="button" class="btn btn-default" onclick="window.location='accertamento.php?edit&id=<? echo $id;?>'">Abilita modifiche</button>    
-
+          <? if($readonly) :?>
+          <button type="button" class="btn btn-default" onclick="window.location='accertamento.php?edit&idAccertamento=<? echo $id;?>'">Abilita modifiche</button>    
+          <?php endif; ?> 
         </div>
       </div>
     </form>
