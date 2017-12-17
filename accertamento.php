@@ -143,6 +143,9 @@
           <? if($readonly) :?>
           <button type="button" class="btn btn-default" onclick="window.location='accertamento.php?edit&idAccertamento=<? echo $id;?>'">Abilita modifiche</button>    
           <?php endif; ?> 
+          <? if(!$nuovo) :?>
+          <button type="button" class="btn btn-default" onclick="window.location='aggiungidoc.php?idAccertamento=<? echo $id;?>'">Aggiungi documento</button>    
+          <?php endif; ?> 
         </div>
       </div>
     </form>
