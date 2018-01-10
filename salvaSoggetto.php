@@ -3,18 +3,21 @@
     RedirectSeMancaCookie();
 
     $ok=true;
-    $id=$_REQUEST["idSoggetto"];
     $conn = ConnettiAlDB();
-    
 
     // imposta variabili da salvare
+    // queste sono settate solo se si proviene dal form accertamento e saranno passate alla aggiungisoggettoaccertamento
+    $idaccertamento=isset($_REQUEST["idAccertamento"])? intval($_REQUEST["idAccertamento"]) : 0;
+    $ruolo=isset($_REQUEST["ruolo"])? intval($_REQUEST["ruolo"]) : 0;
+    $descrizioneruolo=isset($_REQUEST["descrizioneruolo"])? EscapeIfNotEMptyOrNull($conn,$_REQUEST["descrizioneruolo"]) : NULL;
+
+    $id=intval($_REQUEST["idSoggetto"]);
     if($_REQUEST["dataNascita"] != '')
     {
       $dn = DateTime::createFromFormat("d/m/Y",EscapeIfNotEMptyOrNull($conn,$_REQUEST["dataNascita"]))->format("Y-m-d");
     } else $dn=NULL;
     $nome=EscapeIfNotEMptyOrNull($conn,$_REQUEST["nome"]);
     $societa=EscapeIfNotEMptyOrNull($conn,$_REQUEST["societa"]);
-    
     $ln=EscapeIfNotEMptyOrNull($conn,$_REQUEST["luogoNascita"]);
     $re=EscapeIfNotEMptyOrNull($conn,$_REQUEST["residenza"]);
     $tel=EscapeIfNotEMptyOrNull($conn,$_REQUEST["tel"]);
@@ -31,7 +34,7 @@
     
     
     if($ok) {
-      if(!empty($id)) {
+      if($id>0) {
         // controlli per update
         $stmt = $conn->prepare("UPDATE Soggetto SET nome=?, dataNascita=?, luogoNascita=?, residenza=?, tel=?, mail=?, documento=?, indirizzo=?, societa=? where idSoggetto=?");
         $stmt->bind_param("sssssssssi", 
@@ -65,18 +68,23 @@
         $societa,
         $tiposoggetto);
         $ok=$stmt->execute();
-        if($ok) {
+        $errore=$stmt->error;
+        if($ok) 
           $id=$conn->insert_id;
-        }
-        else {
-          $errore=$stmt->error;
-          
-        }
           
       }
-      
+      if($ok)
+        if($idaccertamento>0)
+        {
+          header("Location: AggiungiSoggettoAccertamento.php?idAccertamento=".$idaccertamento."&idSoggetto=".$id."&ruolo=".$ruolo."&descrizioneruolo=".$descrizioneruolo);
+          $conn->close();
+          die();
+  
+        }
+        //else
+        //  header("Location: soggetto.php?idSoggetto=".$id);
+        $conn->close();      
     }
-    $conn->close();
 ?>
 <!DOCTYPE html>
 <html lang="it">

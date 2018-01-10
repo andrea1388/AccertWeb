@@ -20,9 +20,10 @@
     <? include 'menu.php'; ?>
     <h1>Cerca soggetto</h1>
       <form action='listaSoggetti.php'>
+        <input type="hidden" name="elimina" value="<? echo isset($_REQUEST["elimina"])? 1 : 0; ?>">
         <div class="form-group">
           <label for="exampleInputEmail1">Dati</label>
-          <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Dati (nome, cognome, ditta, indirizzo, ecc.)" name="dati">
+          <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Dati (nome, cognome, ditta, indirizzo, ecc.)" name="dati" autofocus>
         </div>
         <button type="submit" class="btn btn-default">Cerca</button>
       </form>

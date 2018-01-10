@@ -2,14 +2,33 @@
 	include 'base.php';
 	if(!empty($_REQUEST["utente"])) {
     $conn = ConnettiAlDB();
+    $utente=isset($_REQUEST["utente"])? EscapeIfNotEMptyOrNull($conn,$_REQUEST["utente"]) : NULL;
+    $password=isset($_REQUEST["password"])? EscapeIfNotEMptyOrNull($conn,$_REQUEST["password"]) : NULL;
     $stmt = $conn->prepare("SELECT * FROM Soggetto where login=?");
-    $stmt->bind_param("s", $_REQUEST["utente"]);
+    $stmt->bind_param("s", $utente);
     $stmt->execute();
     $result = $stmt->get_result();
+    $logatt="Login:";
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        if($row['password']==$_REQUEST["password"]) {setcookie("idutente", $row['idSoggetto']); header('Location: index.php');};
-    };
+        if($row['password']==$password) 
+        {
+          setcookie("idutente", $row['idSoggetto']); 
+          header('Location: index.php'); 
+          $logatt=$logatt." OK";
+        }
+        else {
+          $logatt=$logatt." FAIL (bad pass)";
+        }
+    }
+    else {
+      $logatt=$logatt." FAIL (sconosciuto)";
+    }
+    $logatt=$logatt. " ".$utente."/".$password;
+    $logatt=substr($logatt, 0,99);
+    $stmt = $conn->prepare("INSERT INTO Log (operazione) VALUES (?)");
+    $stmt->bind_param("s", $logatt);
+    if(!$stmt->execute()) die ($logatt. " ". $stmt->error);
     $conn->close();
 
   }
@@ -34,11 +53,11 @@
       <form action='login.php' method='post'>
         <div class="form-group">
           <label for="utente">Nome utente</label>
-          <input type="text" class="form-control" id="utente" placeholder="Nome utente" name="utente">
+          <input type="text" class="form-control" id="utente" placeholder="Nome utente" name="utente" required autofocus>
         </div>
         <div class="form-group">
           <label for="Password">password</label>
-          <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+          <input type="password" class="form-control" id="password" placeholder="Password" name="password" required>
         </div>
         <button type="submit" class="btn btn-default">Login</button>
       </form>

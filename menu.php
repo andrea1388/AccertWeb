@@ -27,6 +27,7 @@
           <ul class="dropdown-menu">
             <li><a href="soggetto.php">Nuovo</a></li>
             <li><a href="cercaSoggetto.php">Cerca</a></li>
+            <li><a href="cercaSoggetto.php?elimina=1">Elimina</a></li>
           </ul>
         </li>
       </ul>

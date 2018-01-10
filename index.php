@@ -17,12 +17,36 @@
   </head>
   <body>
     <div class="container">
-    <? include 'menu.php'; ?>
-    <h1>Accert - versione web</h1>
-		<button type="button" class="btn btn-default" onclick="window.location='cercaSoggetto.php'">Soggetti</button>    
-		<button type="button" class="btn btn-default" onclick="window.location='logout.php'">Esci</button>    
-		<button type="button" class="btn btn-default" onclick="window.location='cercaAccertamento.php'">Cerca Accertamento</button>    
-	</div>
+      <? include 'menu.php'; ?>
+      <h1>Accert - versione web</h1>
+      <br>
+      <button type="button" class="btn btn-primary" onclick="window.location='soggetto.php'">Nuovo soggetto</button>    
+      &nbsp;
+      <button type="button" class="btn btn-primary" onclick="window.location='accertamento.php'">Nuovo accertamento</button>    
+      &nbsp;
+      <button type="button" class="btn btn-primary" onclick="window.location='cercaAccertamento.php'">Cerca Accertamento</button>    
+      &nbsp;
+      <button type="button" class="btn btn-primary" onclick="window.location='logout.php'">Esci</button>    
+      <br><br>
+      <h2>Lista Attivit&agrave; da completare</h2>
+      <table class="table table-hover table-bordered">
+        <thead>
+        <tr class="info"><td>Attivit&agrave;</td><td>Accertamento</td><td>Soggetti</td></tr>
+        </thead>
+        <tbody>
+        <?
+            $conn = ConnettiAlDB();
+            $stmt = $conn->prepare("select t4.descrizione datt, t2.idAccertamento ida, luogo, t2.descrizione dacc ,GROUP_CONCAT(distinct t1.nome ) sogg from Accertamento t2 left join SoggettoAccertamento t3 on t3.idAccertamento=t2.idAccertamento left join Soggetto t1 on  t1.idSoggetto=t3.idSoggetto join Attivita t4 on t4.idAccertamento=t2.idAccertamento where (t3.ruolo<>1) and t4.data is null group by t4.idAttivita order by t2.data desc");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while($row = $result->fetch_assoc())
+            {
+              echo "<tr onclick=\"window.document.location='accertamento.php?idAccertamento=".$row["ida"]."'\";><td>".$row['datt']."</td><td>".$row['dacc']."</td><td>".$row['sogg']."</td></tr>\n";
+            }               
+        ?>
+        </tbody>
+      </table>          
+    </div>
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

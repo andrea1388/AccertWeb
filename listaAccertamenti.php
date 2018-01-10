@@ -20,25 +20,35 @@
     <? include 'menu.php'; ?>
     <h1>Lista accertamenti corrispondenti</h1>
     <table class="table table-bordered table-hover">
-    <tr><td>Numero</td><td>Anno</td><td>Luogo</td><td>Descrizione</td></tr>
-	 <?
+    <thead>
+    <tr class="warning"><td>Numero</td><td>Anno</td><td>Luogo</td><td>Descrizione</td><td>Soggetti</td></tr>
+	</thead>
+    <tbody>
+    <?
         $conn = ConnettiAlDB();
-        $c="%" . $_REQUEST['dati'] . "%";
-        $sql = "SELECT * FROM Accertamento WHERE (numero = ? or luogo like ? or descrizione like ? or descrizione_estesa like ?)";
+        $c="%" . EscapeIfNotEMptyOrNull($conn,$_REQUEST['dati']) . "%";
+        //$sql = "SELECT * FROM Accertamento WHERE (numero = ? or luogo like ? or descrizione like ? or descrizione_estesa like ?)";
+
+        // select distinct numero,anno,luogo,descrizione, select nome from Soggetto from Accertamento left join SoggettoAccertamento on SoggettoAccertamento.idAccertamento=Accertamento.idAccertamento left join Soggetto on Soggetto.idSoggetto=SoggettoAccertamento.idSoggetto where Accertamento.idAccertamento=2 order by Accertamento.idAccertamento
+        $sql="select distinct t2.idAccertamento, numero,anno,luogo,descrizione ,GROUP_CONCAT(distinct t1.nome ) aa from Accertamento t2 left join SoggettoAccertamento t3 on t3.idAccertamento=t2.idAccertamento left join Soggetto t1 on  t1.idSoggetto=t3.idSoggetto  where (t3.ruolo<>1) and (t1.nome like ? or t2.descrizione like ? or t2.luogo like ?) group by t2.idAccertamento order by t2.idAccertamento";
+
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isss", intval($_REQUEST['dati']),$c,$c,$c);
+        $stmt->bind_param("sss", $c,$c,$c);
 		$stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
             // output data of each row
             while($row = $result->fetch_assoc()) {
-                echo "<tr onclick=\"window.document.location='accertamento.php?idAccertamento=".$row["idAccertamento"]."'\";><td>" . $row["numero"]. "</td><td>" . $row["anno"]. "</td><td>" . $row["luogo"]. "</td><td>" . $row["descrizione"] . "</td></tr>\n";
+                echo "<tr onclick=\"window.document.location='accertamento.php?idAccertamento=".$row["idAccertamento"]."'\";><td>" .
+                $row["numero"]. "</td><td>" . $row["anno"]. "</td><td>" . $row["luogo"]. "</td><td>" . $row["descrizione"].
+                "</td><td>".$row["aa"]."</td></tr>\n";
             }
         } else {
             echo "0 results";
         }
         $conn->close();
      ?>
+    </tbody>
 	</table>
     
 	</div>

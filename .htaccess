@@ -1,0 +1,14 @@
+# # av:php5-engine
+AddHandler av-php5 .php
+
+php_value post_max_size 20M
+php_value upload_max_filesize 20M
+
+# # av:Toolbar
+SetEnv AV_TOOLBAR 0
+
+RewriteEngine On
+RewriteBase /
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

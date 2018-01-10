@@ -14,9 +14,11 @@
   }
 	include 'base.php';
   RedirectSeMancaCookie();
-  
+  $conn = ConnettiAlDB();
+  $idaccertamento=isset($_REQUEST["idAccertamento"])? intval($_REQUEST["idAccertamento"]) : 0;
+  $ruolo=isset($_REQUEST["ruolo"])? intval($_REQUEST["ruolo"]) : 0;
+  $descrizioneruolo=isset($_REQUEST["descrizioneruolo"])? EscapeIfNotEMptyOrNull($conn,$_REQUEST["descrizioneruolo"]) : NULL;  
 	if(!empty($_REQUEST["idSoggetto"])) {
-    $conn = ConnettiAlDB();
     $stmt = $conn->prepare("SELECT * FROM Soggetto where idSoggetto=?");
     $stmt->bind_param("i", $_REQUEST["idSoggetto"]);
     $stmt->execute();
@@ -32,7 +34,9 @@
       $sogg=new Soggetto();
       $dn="";
       $readonly=false;
+      if(isset($_REQUEST["nome"])) $sogg->nome=$_REQUEST["nome"];
   }
+  $conn->close();
     
 ?>
 <!DOCTYPE html>
@@ -55,6 +59,9 @@
     <div id="datigenerali">
     <form class="form-horizontal" method="post" action="salvaSoggetto.php">
       <input type="hidden" name="idSoggetto" value="<?echo $sogg->idSoggetto; ?>">
+      <input type="hidden" name="idAccertamento" value="<?echo $idaccertamento; ?>">
+      <input type="hidden" name="ruolo" value="<?echo $ruolo; ?>">
+      <input type="hidden" name="descrizioneruolo" value="<?echo $descrizioneruolo; ?>">
       <? GeneraFormGroup($sogg->nome,"nome","Nome",$readonly); ?>
       <? GeneraFormGroup($sogg->societa,"societa","Societ&agrave;",$readonly); ?>
       <? GeneraFormGroup(FormattaData($sogg->dataNascita,"d/m/Y"),"dataNascita","Data di nascita",$readonly); ?>
